@@ -21,7 +21,6 @@ import (
 	"strings"
 
 	"candy/soong/android"
-
 	"github.com/google/blueprint/proptools"
 )
 
