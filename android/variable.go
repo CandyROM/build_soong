@@ -35,6 +35,7 @@ type variableProperties struct {
 	Product_variables struct {
 		Platform_sdk_version struct {
 			Asflags []string
+			Cflags  []string
 		}
 
 		// unbundled_build is a catch-all property to annotate modules that don't build in one or
@@ -60,14 +61,18 @@ type variableProperties struct {
 			Cflags []string
 		}
 
-		// treble is true when a build is a Treble compliant device.  This is automatically set when
-		// a build is shipped with Android O, but can be overriden.  This controls such things as
-		// the sepolicy split and enabling the Treble linker namespaces.
-		Treble struct {
+		Device_uses_hwc2 struct {
 			Cflags []string
 		}
 
 		Override_rs_driver struct {
+			Cflags []string
+		}
+
+		// treble is true when a build is a Treble compliant device.  This is automatically set when
+		// a build is shipped with Android O, but can be overriden.  This controls such things as
+		// the sepolicy split and enabling the Treble linker namespaces.
+		Treble struct {
 			Cflags []string
 		}
 
@@ -87,9 +92,13 @@ type variableProperties struct {
 			Cflags   []string
 			Cppflags []string
 		}
-		// include candy variables
-		*android.Product_variables
 
+		Pdk struct {
+			Enabled *bool
+		}
+
+		// include candy variables
+		Candy android.Product_variables
 	} `android:"arch_variant"`
 }
 
@@ -99,7 +108,8 @@ type productVariables struct {
 	// Suffix to add to generated Makefiles
 	Make_suffix *string `json:",omitempty"`
 
-	Platform_sdk_version *int `json:",omitempty"`
+	Platform_sdk_version           *int     `json:",omitempty"`
+	Platform_version_all_codenames []string `json:",omitempty"`
 
 	DeviceName        *string   `json:",omitempty"`
 	DeviceArch        *string   `json:",omitempty"`
@@ -132,7 +142,11 @@ type productVariables struct {
 	Debuggable                 *bool `json:",omitempty"`
 	Eng                        *bool `json:",omitempty"`
 	EnableCFI                  *bool `json:",omitempty"`
+	Device_uses_hwc2           *bool `json:",omitempty"`
 	Treble                     *bool `json:",omitempty"`
+	Pdk                        *bool `json:",omitempty"`
+
+	IntegerOverflowExcludePaths *[]string `json:",omitempty"`
 
 	VendorPath *string `json:",omitempty"`
 
@@ -148,6 +162,7 @@ type productVariables struct {
 
 	SanitizeHost       []string `json:",omitempty"`
 	SanitizeDevice     []string `json:",omitempty"`
+	SanitizeDeviceDiag []string `json:",omitempty"`
 	SanitizeDeviceArch []string `json:",omitempty"`
 
 	ArtUseReadBarrier *bool `json:",omitempty"`
@@ -156,8 +171,10 @@ type productVariables struct {
 
 	Override_rs_driver *string `json:",omitempty"`
 
-	// include candy variables
-	*android.ProductVariables
+	DeviceKernelHeaders []string `json:",omitempty"`
+
+	// include Candy variables
+	Candy android.ProductVariables
 }
 
 func boolPtr(v bool) *bool {
